@@ -1,0 +1,20 @@
+
+
+{% extends 'layout.html' %}
+
+{% block header %}Welcome to {{ company_name }}{% endblock header %}
+
+{% block inside_body %}
+
+<hr>
+<p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus facilis iste obcaecati, accusantium, asperiores quidem minus adipisci voluptatum beatae nisi esse exercitationem eos neque suscipit ratione optio magnam. Deleniti, minus?</p>
+<p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laboriosam sapiente, ratione ut atque aperiam, vel tempore deserunt saepe nihil ad nisi eaque iusto, sed ducimus cumque. Dolorem tempora facilis officia.</p>
+<hr>
+
+<div>
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-block btn-large">Login</a>
+    <a href="{{ url_for('register') }}" class="btn btn-secondary btn-block btn-large">Register</a>
+</div>
+
+{% endblock inside_body %}
+

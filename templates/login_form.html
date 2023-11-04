@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock title %}
+
+{% block header %}Employee Login{% endblock header %}
+
+{% block inside_body %}
+<form method="post">     
+    {{ form.hidden_tag() }}
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control") }}
+    <br><br>
+    {{ form.password.label(class="form-label") }}
+    {{ form.password(class="form-control") }}
+    <br><br>
+    {{ form.submit(class="btn btn-outline-secondary") }}
+</form>  
+
+{% endblock inside_body %}

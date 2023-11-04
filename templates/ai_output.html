@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block title %}Plan for {{ pname }}{% endblock title %}
+
+{% block header %}<em>Results</em>{% endblock header %}
+
+{% block inside_body %}
+<h3>{{ pname + " - " + paddress }}</h3> 
+<br>
+<h5>{{ pquery }}</h5>
+<hr>
+{% for rec in completion %}
+    <p>{{ rec }}</p>
+{% endfor %}
+
+<a href="{{ url_for('login') }}">New action</a>
+<a href="{{ url_for('messageform') }}">send to email</a>
+
+{% endblock inside_body %}

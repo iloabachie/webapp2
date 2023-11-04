@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}Fail{% endblock title %}
+
+{% block header %}Login Error{% endblock header %}
+
+{% block inside_body %}
+<h2>"{{ username }}" not found in our database</h2>
+<br>
+<a href="{{ url_for('login') }}">Login</a>
+{% endblock inside_body %}

@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}Failed{% endblock title %}
+
+{% block header %}Email not delivered!!!{% endblock header %}
+
+{% block inside_body %}
+<h2>Message delivery to {{ email }} was unsuccessful</h2>
+<br>
+<a href="{{ url_for('login') }}">New Query</a>
+{% endblock inside_body %}

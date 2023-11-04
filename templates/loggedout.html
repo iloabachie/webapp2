@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}Logged out{% endblock title %}
+
+{% block header %}You successfully logged out{% endblock header %}
+
+{% block inside_body %}
+<h2>You are logged out</h2>
+<br>
+<a href="{{ url_for('login') }}">Login</a>
+{% endblock inside_body %}

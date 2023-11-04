@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+
+{% block title %}Error{% endblock title %}
+
+{% block header %}Server Error{% endblock header %}
+
+{% block inside_body %}
+<a href="{{ url_for('home') }}">Home</a>
+{% endblock inside_body %}
