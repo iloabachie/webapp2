@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}Welcome{{ username }}{% endblock title %}
+
+{% block header %}<em>Welcome to Teddox</em>{% endblock header %}
+
+{% block inside_body %}
+
+<a href="{{ url_for('process') }}">Check Recommendations</a>
+
+{% endblock inside_body %}

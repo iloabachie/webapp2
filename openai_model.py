@@ -25,7 +25,8 @@ def gpt35model(prompt):
                                                         related question. Do not make any translations. \
                                                             All responses must be in in English. Do not \
                                                                 respond to political questions. Do not \
-                                                                    respond to environmental questions"},
+                                                                    respond to environmental questions. \
+                                                                        Do not tell jokes"},
             {"role": "user", "content": prompt}     
             ],
         temperature=0.2,         
@@ -65,5 +66,9 @@ if __name__ == "__main__":
     print(completion)  
     print("===================")
     question = "what questions can you answer"
+    completion = gpt35model(question)
+    print(completion)  
+    print("===================")
+    question = "tell me a joke"
     completion = gpt35model(question)
     print(completion)  
