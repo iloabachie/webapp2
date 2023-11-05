@@ -3,6 +3,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 
+
+smtp_port = 587#os.getenv("SMTP_PORT")
+smtp_server = "smtp.mail.com"#os.getenv("GSERVER")
+sender_email = "udemezue@mail.com"#os.environ.get("GUSERNAME")
+sender_password = "FK7@u-*5dyjFXM%0m3oK@cH!e"#os.environ.get("GPASSWORD")
+
+
 smtp_port = os.getenv("SMTP_PORT")
 smtp_server = os.getenv("GSERVER")
 sender_email = os.environ.get("GUSERNAME")

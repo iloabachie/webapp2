@@ -105,23 +105,24 @@ def welcome():
      
 
 @app.route('/send_mail', methods=['POST', 'GET'])
-def send_to_email():    
-    result = session.get('ai_output')
-    subject = result[0] + '-' + result[1]
-    completion = '\n'.join(result[3])
-    body = f"{result[2]} \n{completion}"
-    ic(subject, body)
+def send_to_email():  
     if request.method == "GET":
+        result = session.get('ai_output')
+        subject = result[0] + '-' + result[1]
+        completion = '\n'.join(result[3])
+        body = f"{result[2]} \n{completion}"
+        ic(subject, body)    
         return render_template('emailform.html', subject=subject, body=body)
-    email = request.form.get('receiver')    
-    subject = request.form.get('subject')
-    message = request.form.get('message')
-    ic(email, subject, message)
-    is_sent = send_email(email, subject, message)
-    if is_sent:
-        return render_template('emailsent.html', email=email)
-    else:
-        return render_template('emailfail.html', email=email)
+    if request.method == "POST":
+        email = request.form.get('receiver')    
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        ic(email, subject, message)
+        is_sent = send_email(email, subject, message)
+        if is_sent:
+            return render_template('emailsent.html', email=email)
+        else:
+            return render_template('emailfail.html', email=email)
 
 # used to redirect
 @app.route('/test')
