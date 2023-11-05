@@ -8,6 +8,7 @@ import os
 import datetime
 import openai_model
 from email_model import send_email
+from loremipsum import get_paragraph
 
 ic(type(session), type(request))
 
@@ -46,7 +47,8 @@ class PatientForm(FlaskForm):
 def inject_defaults():
     default_year = datetime.date.today()
     company_name = "Teddox"
-    return dict(default_year=default_year, company_name=company_name)
+    glorem = get_paragraph(start_with_lorem=True)
+    return dict(default_year=default_year, company_name=company_name, lorem=glorem)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -63,7 +65,8 @@ def home():
 
 @app.route('/register', methods=['POST', "GET"])
 def register():
-    return render_template("register.html")
+    lorem = get_paragraph(start_with_lorem=True)
+    return render_template("register.html", lorem=lorem)
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
