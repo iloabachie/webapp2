@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_wtf import FlaskForm 
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
@@ -123,6 +123,12 @@ def send_to_email():
     else:
         return render_template('emailfail.html', email=email)
 
+# used to redirect
+@app.route('/test')
+def source_route():
+    import time
+    time.sleep(5)
+    return redirect(url_for('process'))
 
 @app.route('/logout')
 def logout():
