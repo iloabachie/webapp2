@@ -47,8 +47,8 @@ class PatientForm(FlaskForm):
 def inject_defaults():
     default_year = datetime.date.today()
     company_name = "Teddox"
-    glorem = get_paragraph(start_with_lorem=True)
-    return dict(default_year=default_year, company_name=company_name, lorem=glorem)
+    # glorem = get_paragraph(start_with_lorem=True)
+    return dict(default_year=default_year, company_name=company_name) #, lorem=glorem)
 
 @app.errorhandler(404)
 def page_not_found(e):

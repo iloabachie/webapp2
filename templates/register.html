@@ -1,1 +1,12 @@
-<p>{{ glorem }}</p>
+{% extends 'layout.html' %}
+
+{% block title %}Register{% endblock title %}
+
+{% block header %}Register An Account{% endblock header %}
+
+{% block inside_body %}
+<p>{{ lorem }}</p>
+<br>
+<a href="{{ url_for('loggedin') }}">Signup</a>
+
+{% endblock inside_body %}
