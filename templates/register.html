@@ -5,8 +5,11 @@
 {% block header %}Register An Account{% endblock header %}
 
 {% block inside_body %}
-<p>{{ lorem }}</p>
+
+<a href="{{ url_for('welcome') }}">Signup</a>
 <br>
-<a href="{{ url_for('loggedin') }}">Signup</a>
+<p>{{ lorem }}</p>
+
+<a href="{{ url_for('welcome') }}">Signup</a>
 
 {% endblock inside_body %}
