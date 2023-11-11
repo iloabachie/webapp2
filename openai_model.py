@@ -37,6 +37,10 @@ def gpt35model(prompt):
     return completion.choices[0].message.content
 
 if __name__ == "__main__":
+    print("===================")
+    question = "linux command for recursive folder copy"
+    completion = gpt35model(question)
+    print(completion)  
     question = "translate 'how are you' to french"
     completion = gpt35model(question)
     print(completion)   

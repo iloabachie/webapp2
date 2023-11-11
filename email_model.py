@@ -2,17 +2,13 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-
-
-smtp_port = 587
-smtp_server = "smtp.mail.com"
-sender_email = "udemezue@mail.com"
-sender_password = "FK7@u-*5dyjFXM%0m3oK@cH!e"
+from icecream import ic
 
 smtp_port = os.getenv("SMTP_PORT")
 smtp_server = os.getenv("GSERVER")
 sender_email = os.environ.get("GUSERNAME")
 sender_password = os.environ.get("GPASSWORD")
+ic(smtp_port, smtp_server, sender_email, sender_password)
 
 def send_email(to: str, subject: str, message: str, cc: str=None) -> None:
     msg = MIMEMultipart()
@@ -28,7 +24,7 @@ def send_email(to: str, subject: str, message: str, cc: str=None) -> None:
         server.starttls()
         server.login(sender_email, sender_password)
         text = msg.as_string()
-        server.sendmail(sender_email, [to, "udemezue@outlook.com"], text)        
+        server.sendmail(sender_email, [to, "python.smtp@hotmail.com"], text)        
         successful = True
     except Exception as e:
         print(f'Email could not be sent to {to}. Error: {str(e)}')
@@ -38,5 +34,5 @@ def send_email(to: str, subject: str, message: str, cc: str=None) -> None:
     return successful
 
 if __name__ == "__main__":
-    send_email('udemezue@gmail.com', 'testing smtp email', "testing without cc")
-    send_email('udemezue@gmail.com', 'testing smtp email', "testing with cc", "ezue1@yahoo.com")
+    print(send_email('ropsvq@hldrive.com', 'testing smtp email', "testing without cc"))
+    print(send_email('ropsvq@hldrive.com', 'testing smtp email', "testing with cc", "ropsvq@hldrive.com"))
