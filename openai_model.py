@@ -41,6 +41,7 @@ if __name__ == "__main__":
     question = "linux command for recursive folder copy"
     completion = gpt35model(question)
     print(completion)  
+    print("===================")
     question = "translate 'how are you' to french"
     completion = gpt35model(question)
     print(completion)   
