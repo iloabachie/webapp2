@@ -1,51 +1,61 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, flash, redirect, url_for
 from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms import StringField, IntegerField, DateField, SubmitField, PasswordField, EmailField
+from wtforms.validators import DataRequired, Email, Regexp
 from flask_sqlalchemy import SQLAlchemy 
+from sqlalchemy.exc import OperationalError
 from icecream import ic
 import os
-import datetime
+from datetime import datetime, date
 import openai_model
 from email_model import send_email
 from loremipsum import get_paragraph
+from hashlib import sha256
 
-ic(type(session), type(request))
+# ic(type(session), type(request))
 
 app = Flask(__name__) 
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Add Database
 
+# print(app.config)
 
 # Initialize the database
 db = SQLAlchemy(app)
 
 # create a model
 class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    username = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, primary_key=True)
+    fname = db.Column(db.String(50), nullable=False)
+    lname = db.Column(db.String(50), nullable=False)
+    username = db.Column(db.String(50), nullable=False, unique=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    active = True # used in tracking active accounts
+    password = db.Column(db.String(200), nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)    
     
     def __repr__(self):
-        return "<Name %r>" % self.name
-    
+        return "<Name %r>" % self.fname + "|" + self.lname + "|" + self.username + "|" + self.email
 
-# Not used yet
-class PatientForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    location = StringField("Location", validators=[DataRequired()])
-    query = StringField("Query", validators=[DataRequired()])
-    submit = SubmitField("Submit")
-# -----------------------------
-    
+# Create a function to create the database tables
+def create_tables():
+    with app.app_context():
+        try:
+            # Attempt to query the database to check if it exists
+            db.engine.execute("SELECT 1")
+        except Exception as e:
+            print(f'Exception occurred while checking if database exists 	\033[31m{e}	\033[0m')
+            # If the database doesn't exist, create it
+            # db.create_all()
+        finally:
+            db.create_all()
+
+# Example: Run the create_tables function when the script is executed
+if __name__ == '__main__':
+    create_tables()
     
 @app.context_processor
 def inject_defaults():
-    default_year = datetime.date.today()
+    default_year = date.today()
     company_name = "Teddox"
     # glorem = get_paragraph(start_with_lorem=True)
     return dict(default_year=default_year, company_name=company_name) #, lorem=glorem)
@@ -62,11 +72,62 @@ def server_error(e):
 def home():
     return render_template("welcome.html")
 
+password_regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$"
+class SignUpForm(FlaskForm):
+    fname = StringField("First Name", validators=[DataRequired()])
+    lname = StringField("Last Name", validators=[DataRequired()])
+    username = StringField("username", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired()])
+    # password1 = PasswordField("Password", validators=[Regexp(regex=password_regex, message="password requirement not met")])
+    # password2 = PasswordField("Retype password", validators=[Regexp(regex=password_regex, message="password requirement not met")])
+    password1 = PasswordField("Password", validators=[DataRequired()])
+    password2 = PasswordField("Retype password", validators=[DataRequired()])
+    submit = SubmitField("Create Account")
+
+
 
 @app.route('/register', methods=['POST', "GET"])
 def register():
     lorem = get_paragraph(start_with_lorem=True)
-    return render_template("register.html", lorem=lorem)
+    form = SignUpForm()
+    print('	\033[31mi got here1	\033[0m')
+    if request.method == "POST":
+        if form.validate_on_submit():
+            email_taken = False
+            user_taken = False
+            no_match = False
+            fname = form.fname.data            
+            lname = form.lname.data
+            username = form.username.data
+            email = form.email.data            
+            user_e = Users.query.filter_by(email=email).first()
+            user_n = Users.query.filter_by(username=username).first()
+            print('	\033[31mi got here2	\033[0m')
+            password1 = form.password1.data  
+            password2 = form.password2.data 
+            if password1 != password2:
+                no_match = True
+            if user_e:
+                email_taken = True
+            if user_n:
+                user_taken = True
+            if user_e or user_n or no_match:
+                return render_template("register.html", lorem=lorem, form=form, email_taken=email_taken, user_taken=user_taken, no_match=no_match)
+                        
+            print(password1, password2)
+            print('	\033[31mi got here3	\033[0m')
+            password_hash = sha256(password2.encode()).hexdigest()
+            print(111, password_hash, print(len(password_hash)))
+            user = Users(fname=fname, lname=lname, username=username, email=email, password=password_hash)
+            db.session.add(user)
+            db.session.commit()
+            flash("Profile created successfully")  # lets see if it works
+            # Clear Form fileds pending
+            print('	\033[31mi got here4	\033[0m')
+            userlist = Users.query.order_by(Users.date_added)  
+            return render_template('loggedin.html', fname=fname, userlist=userlist)            
+        
+    return render_template("register.html", lorem=lorem, form=form)
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
@@ -79,7 +140,9 @@ def login():
     if request.method == 'POST':        
         if form.validate_on_submit():
             username = form.username.data
+            form.username.data = None
             password = form.password.data  
+            form.password.data = None
             # authentication logic
             ic(username, password)
             return render_template('loggedin.html', user=username)
@@ -87,33 +150,76 @@ def login():
 
 @app.route("/process", methods=['POST', 'GET'])
 def process():
+    print("process1 running")
     result = None
     if request.method == 'POST':
         if not result:
-            pname = request.form.get('patients_name')    
-            paddress = request.form.get('patients_address')
-            pquery = request.form.get('query')     
-            completion = openai_model.gpt35model(pquery) 
+            name = request.form.get('patients_name')    
+            address = request.form.get('patients_address')
+            query = request.form.get('query')     
+            completion = openai_model.gpt35model(query) 
             completion = completion.split('\n')
-            result = [pname, paddress, pquery, completion] 
+            result = [name, address, query, completion] 
             session["ai_output"] = result
-            return render_template('ai_output.html', result=result) 
-        else:
-            pass
+            flash(f"Processed information... for {name}") # added to aioutput but not working.
+            return render_template('ai_output.html', pname=name, result=result) 
     return render_template("ai_req_form.html")
 
-@app.route('/loggedin')
-def welcome():
-    return render_template('loggedin.html')
-     
+# changing form to WTF
+# ====================================
+class AiInputForm(FlaskForm):
+    fname = StringField("First Name", validators=[DataRequired()])
+    mname = StringField("Middle Name", validators=[DataRequired()])
+    lname = StringField("Last Name", validators=[DataRequired()])
+    age = IntegerField("Age", validators=[DataRequired()])
+    dob = DateField("DOB", validators=[DataRequired()])
+    location = StringField("Location", validators=[DataRequired()])
+    message1 = StringField("Information1", validators=[DataRequired()])
+    message2 = StringField("Information2", validators=[DataRequired()])
+    message3 = StringField("Information3", validators=[DataRequired()])
+    message4 = StringField("Information4", validators=[DataRequired()])
+    message5 = StringField("Information5", validators=[DataRequired()])
+    submit = SubmitField("Process")
+    
+@app.route("/process2", methods=['POST', 'GET'])
+def process2():
+    print('process2 running')
+    form = AiInputForm()
+    result = None
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            fname = form.fname.data            
+            mname = form.mname.data
+            lname = form.lname.data
+            age = form.age.data
+            dob = form.dob.data
+            location = form.location.data
+            message1 = form.message1.data
+            message2 = form.message2.data
+            message3 = form.message3.data
+            message4 = form.message4.data
+            message5 = form.message5.data
+            info = [message1, message2, message3, message4, message5]
+            completion = openai_model.gpt35model(' '.join(info)) 
+            completion = completion.split('\n')
+            result = [fname, mname, lname, age, dob, location, completion] 
+            session["ai_output"] = result
+            flash(f"Processed information... for {fname} {lname}") # added to aioutput but not working.
+            return render_template('ai_output.html', pname=fname, result=result) 
+    return render_template("ai_req_form2.html", form=form)
+#=======================================
+
+# @app.route('/loggedin')
+# def welcome():
+#     return render_template('loggedin.html')     
 
 @app.route('/send_mail', methods=['POST', 'GET'])
 def send_to_email():  
     if request.method == "GET":
         result = session.get('ai_output')
-        subject = result[0] + '-' + result[1]
-        completion = '\n'.join(result[3])
-        body = f"{result[2]} \n{completion}"
+        subject = result[0] + '-' + result[2]
+        completion = '\n'.join(result[-1])
+        body = f"{result[3]} \n{completion}"
         ic(subject, body)    
         return render_template('emailform.html', subject=subject, body=body)
     if request.method == "POST":
@@ -141,5 +247,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    # app.run(host='0.0.0.0', port=8888, debug=True)
-    app.run()
+    app.run(host='0.0.0.0', port=8888, debug=True)
+    # app.run()

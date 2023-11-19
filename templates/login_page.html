@@ -5,7 +5,7 @@
 {% block header %}Employee Login{% endblock header %}
 
 {% block inside_body %}
-<form method="post">     
+<form method="POST">     
     {{ form.hidden_tag() }}
     {{ form.username.label(class="form-label") }}
     {{ form.username(class="form-control") }}

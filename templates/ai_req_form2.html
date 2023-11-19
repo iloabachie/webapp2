@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ company_name }}{% endblock title %}
+
+{% block header %}Welcome{% endblock header %}
+
+{% block inside_body %}
+
+<form method="POST"> 
+    {{ form.hidden_tag() }}
+    {{ form.fname.label(class="form-label") }}
+    {{ form.fname(class="form-control") }}
+
+    {{ form.mname.label(class="form-label") }}
+    {{ form.mname(class="form-control") }}
+
+    {{ form.lname.label(class="form-label") }}
+    {{ form.lname(class="form-control") }}
+
+    {{ form.dob.label(class="form-label") }}
+    {{ form.dob(class="form-control") }}
+
+    {{ form.age.label(class="form-label") }}
+    {{ form.age(class="form-control") }}
+
+    {{ form.location.label(class="form-label") }}
+    {{ form.location(class="form-control") }}
+    <br>
+    {{ form.message1.label(class="form-label") }}
+    {{ form.message1(class="form-control") }}
+
+    {{ form.message2.label(class="form-label") }}
+    {{ form.message2(class="form-control") }}
+
+    {{ form.message3.label(class="form-label") }}
+    {{ form.message3(class="form-control") }}
+
+    {{ form.message4.label(class="form-label") }}
+    {{ form.message4(class="form-control") }}
+
+    {{ form.message5.label(class="form-label") }}
+    {{ form.message5(class="form-control") }}
+    <br>
+    {{ form.submit(class="btn btn-outline-secondary") }}
+</form> 
+{% endblock inside_body %}

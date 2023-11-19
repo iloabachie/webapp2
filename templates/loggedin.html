@@ -1,11 +1,31 @@
 {% extends 'layout.html' %}
 
-{% block title %}Welcome{{ username }}{% endblock title %}
+{% block title %}Welcome{% endblock title %}
 
-{% block header %}<em>Welcome to Teddox</em>{% endblock header %}
+{% block header %}<em>Welcome to Teddox {{ user|title }}</em>{% endblock header %}
 
 {% block inside_body %}
 
-<a href="{{ url_for('process') }}">Check Recommendations</a>
+<h3>welcome {{ fname | title }}</h3>
 
+<a href="{{ url_for('process') }}">Check Recommendations</a>
+<a href="{{ url_for('process2') }}">Check Recommendations2</a>
+
+<br/>
+<h4>List of Users</h4>
+<table border=1>
+{% for user in userlist %}
+<!--
+<tr>
+    <td>{{ user }}</td>
+</tr>
+-->
+<tr>
+    <td>{{ user.fname }}</td>
+    <td>{{user.username }}</td>
+    <td>{{ user.user_id }}</td>
+    <td>{{ user.date_added }}</td>
+</tr>
+{% endfor %}
+</table>
 {% endblock inside_body %}

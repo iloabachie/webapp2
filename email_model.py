@@ -8,7 +8,8 @@ smtp_port = os.getenv("SMTP_PORT")
 smtp_server = os.getenv("GSERVER")
 sender_email = os.environ.get("GUSERNAME")
 sender_password = os.environ.get("GPASSWORD")
-ic(smtp_port, smtp_server, sender_email, sender_password)
+if __name__ == "__main__":
+    ic(smtp_port, smtp_server, sender_email, sender_password)
 
 def send_email(to: str, subject: str, message: str, cc: str=None) -> None:
     msg = MIMEMultipart()

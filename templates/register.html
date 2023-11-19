@@ -5,11 +5,48 @@
 {% block header %}Register An Account{% endblock header %}
 
 {% block inside_body %}
-
-<a href="{{ url_for('welcome') }}">Signup</a>
+<h3>Provide yoru details. If you already have an account please 
+    <a href="{{ url_for('login') }}">login</a></h3>
 <br>
-<p>{{ lorem }}</p>
+<p>{{ lorem[:100] }}</p>
 
-<a href="{{ url_for('welcome') }}">Signup</a>
+{% if email_taken %}
+    <hr>
+    Email taken.  Please choose a different one<br/>
+{% endif %}
+{% if user_taken %}
+    <hr>
+    Username taken.  please choose another<br/>
+{% endif %}
+{% if not email_taken and not user_taken %}
+    {% if no_match %}
+        <hr>
+        Passwords do not match<br/>
+    {% endif %}
+{% endif %}
+<hr>
+<form method="POST">     
+    {{ form.hidden_tag() }}
+    {{ form.fname.label(class="form-label") }}
+    {{ form.fname(class="form-control") }}
+
+    {{ form.lname.label(class="form-label") }}
+    {{ form.lname(class="form-control") }}
+
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control") }}
+
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control") }}
+
+    {{ form.password1.label(class="form-label") }}
+    {{ form.password1(id="pw1", class="form-control") }}
+    <p id="match" class="hidden">  </p>
+    {{ form.password2.label(class="form-label") }}
+    {{ form.password2(id="pw2", class="form-control") }}    
+    <br>
+    {{ form.submit(class="btn btn-outline-secondary") }}
+</form>  
+
 
 {% endblock inside_body %}

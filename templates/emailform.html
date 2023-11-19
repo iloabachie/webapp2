@@ -5,27 +5,23 @@
 {% block header %}<em>Send to mailbox</em>{% endblock header %}
 
 {% block inside_body %}
+
+<p class="hidden" id='copy'>{{ body }}</p>
+
 <h3>{{ subject }}</h3> 
-<br>
-<h5>{{ pquery }}</h5>
 <hr>
-<a href="{{ url_for('welcome')  }}">New action</a>
+<a href="{{ url_for('welcome') }}">New action</a>
 <hr>
+
 <form action="{{ url_for('send_to_email') }}" method="post">            
     <label class="form-label">Recepient</label>
     <input class="form-control" type="text" name="receiver" placeholder="email address" required><br>
     <label class="form-label">Subject</label>
     <input class="form-control" type="text" name="subject" value={{ subject }} required><br>
-    
+    <button onclick="insert_message()">Insert Recommendation</button><br>
     <label class="form-label">Message</label><br>
-    <textarea class="form-control" name="message" rows="8" cols="40" value={{ body }} required></textarea><br>
-            
+    <textarea id="paste" class="form-control" name="message" rows="8" cols="40" value={{ body }} required></textarea><br>    
     <input class="btn btn-outline-primary" type="submit" value="Send">
 </form>
 
-<hr>
-<p>{{ subject }}</p>
-<p>{{ body }}</p>
-<p></p>
-<hr>
 {% endblock inside_body %}

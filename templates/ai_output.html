@@ -1,18 +1,27 @@
 {% extends 'layout.html' %}
 
-{% block title %}Plan for {{ pname }}{% endblock title %}
+{% block title %}Plan for {{ name }}{% endblock title %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor%}
 
 {% block header %}<em>Results</em>{% endblock header %}
+
+
 
 {% block inside_body %}
 <h3>{{ result[0] + " - " + result[1] }}</h3> 
 <br>
 <h5>{{ result[2] }}</h5>
 <hr>
-{% for rec in result[3] %}
-    <p>{{ rec }}</p>
+{% for rec in result[-1] %}
+    {{ rec }}<br>
 {% endfor %}
-
+<br>
 <a href="{{ url_for('process') }}">New action</a>
 <a href="{{ url_for('send_to_email') }}">send to email</a>
 
