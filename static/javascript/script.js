@@ -12,9 +12,11 @@ function compareFields() {
 
     // Check if the values match
     if (value1 === value2) {
-
+        resultParagraph.className = ''
         resultParagraph.innerText = 'Match';
+        
     } else {
+        resultParagraph.className = ''
         resultParagraph.innerText = 'Entries do not match.';
     }
 }
@@ -27,3 +29,5 @@ var resultParagraph = document.getElementById('natch');
 // Add event listeners to the input fields
 field1.addEventListener('input', compareFields);
 field2.addEventListener('input', compareFields);
+
+

@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from flask_wtf import FlaskForm 
-from wtforms import StringField, IntegerField, DateField, SubmitField, PasswordField, EmailField
-from wtforms.validators import DataRequired, Email, Regexp
-from flask_sqlalchemy import SQLAlchemy 
-from sqlalchemy.exc import OperationalError
+from wtforms import StringField, IntegerField, DateField, SubmitField, PasswordField, EmailField, BooleanField, ValidationError
+from wtforms.validators import DataRequired, Email, Regexp, EqualTo, Length
+from flask_sqlalchemy import SQLAlchemy
+# from sqlalchemy.exc import OperationalError 
 from icecream import ic
 import os
 from datetime import datetime, date
@@ -11,12 +11,18 @@ import openai_model
 from email_model import send_email
 from loremipsum import get_paragraph
 from hashlib import sha256
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # ic(type(session), type(request))
 
 app = Flask(__name__) 
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Add Database
+# app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLITE_DB")  # Add Database
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/postgres_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:3984@localhost:5432/users_pgdb'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # check on this
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///users_pg'
+
 
 # print(app.config)
 
@@ -24,34 +30,38 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Add Database
 db = SQLAlchemy(app)
 
 # create a model
-class Users(db.Model):
+class Users(db.Model): # No need to define init class
+    __tablename__ = "registered_users"
     user_id = db.Column(db.Integer, primary_key=True)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(50), nullable=False, unique=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
-    password = db.Column(db.String(200), nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)    
+    
+    @property
+    def password(self):
+        raise AttributeError('Password is not a readable attribute')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
     
     def __repr__(self):
         return "<Name %r>" % self.fname + "|" + self.lname + "|" + self.username + "|" + self.email
 
-# Create a function to create the database tables
-def create_tables():
-    with app.app_context():
-        try:
-            # Attempt to query the database to check if it exists
-            db.engine.execute("SELECT 1")
-        except Exception as e:
-            print(f'Exception occurred while checking if database exists 	\033[31m{e}	\033[0m')
-            # If the database doesn't exist, create it
-            # db.create_all()
-        finally:
-            db.create_all()
+# Create a function to create the database tables for sqllite
+# def create_tables():
+#     with app.app_context():        
+#         db.create_all()
 
 # Example: Run the create_tables function when the script is executed
-if __name__ == '__main__':
-    create_tables()
+# if __name__ == '__main__':
+#     create_tables()
     
 @app.context_processor
 def inject_defaults():
@@ -80,10 +90,9 @@ class SignUpForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired()])
     # password1 = PasswordField("Password", validators=[Regexp(regex=password_regex, message="password requirement not met")])
     # password2 = PasswordField("Retype password", validators=[Regexp(regex=password_regex, message="password requirement not met")])
-    password1 = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField("Retype password", validators=[DataRequired()])
+    password1 = PasswordField("Password", validators=[DataRequired(), EqualTo(fieldname='password2', message="Password should match" )])
+    password2 = PasswordField("Confirm password", validators=[DataRequired()])
     submit = SubmitField("Create Account")
-
 
 
 @app.route('/register', methods=['POST', "GET"])
@@ -114,11 +123,12 @@ def register():
             if user_e or user_n or no_match:
                 return render_template("register.html", lorem=lorem, form=form, email_taken=email_taken, user_taken=user_taken, no_match=no_match)
                         
-            print(password1, password2)
-            print('	\033[31mi got here3	\033[0m')
-            password_hash = sha256(password2.encode()).hexdigest()
-            print(111, password_hash, print(len(password_hash)))
-            user = Users(fname=fname, lname=lname, username=username, email=email, password=password_hash)
+            # print(password1, password2)
+            # print('	\033[31mi got here3	\033[0m')
+            # password_hash = sha256(password2.encode()).hexdigest()
+            # print(111, password_hash, print(len(password_hash)))
+            hashed_pw = generate_password_hash(password1, 'pbkdf2')
+            user = Users(fname=fname, lname=lname, username=username, email=email, password=hashed_pw)
             db.session.add(user)
             db.session.commit()
             flash("Profile created successfully")  # lets see if it works
@@ -137,6 +147,7 @@ class LoginForm(FlaskForm):
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     form = LoginForm()
+    # ic(type(form.password1.label(class="form-label")))
     if request.method == 'POST':        
         if form.validate_on_submit():
             username = form.username.data
@@ -247,5 +258,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8888, debug=True)
-    # app.run()
+    app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
+    # app.run(debug=False) # For production
