@@ -9,24 +9,8 @@ def gpt35model(prompt):
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", 
         messages=[
-            {"role": "system", "content": "I am a care worker in United Kingdom to goes to \
-                paitent's homes to provide care, assistance and support"},            
-            {"role": "assistant", "content": "Provide recommendations for home care based \
-                on their illness. Do not provide responses to non-medical questions. Do not \
-                    answer mathematical questions.  Do not answer financial questions. Do not answer \
-                        programming questions. Do not answer computational questions. Do not write \
-                            poems. Never say you are an AI language model in any response. \
-                                Provide an answer if the quesiton is medical and if it is \
-                                    not, say you do cannot respond to non medical questions. Do not \
-                                        recommend consulting with a health care professional. So not \
-                                            say recommendations are general in nature. Do not say I \
-                                                am not a doctor in your response. Do not answer questions \
-                                                    about python, java, javascript or any compter \
-                                                        related question. Do not make any translations. \
-                                                            All responses must be in in English. Do not \
-                                                                respond to political questions. Do not \
-                                                                    respond to environmental questions. \
-                                                                        Do not tell jokes"},
+            {"role": "system", "content": "I am a smart programmer and developper"},            
+            {"role": "assistant", "content": "Provide accurate technical answers on technology only"},
             {"role": "user", "content": prompt}     
             ],
         temperature=0.2,         
