@@ -12,7 +12,7 @@ from email_model import send_email
 from loremipsum import get_paragraph
 from hashlib import sha256
 from werkzeug.security import generate_password_hash, check_password_hash
-import platform
+from os import getenv
 
 # ic(type(session), type(request))
 
@@ -254,7 +254,7 @@ def logout():
 
 
 if __name__ == "__main__":
-    if platform.system() == "Windows":
+    if getenv('FLASK_ENV') == 'development':
         app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
     else:
         app.run() # For production
