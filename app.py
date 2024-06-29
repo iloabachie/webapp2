@@ -12,6 +12,7 @@ from email_model import send_email
 from loremipsum import get_paragraph
 from hashlib import sha256
 from werkzeug.security import generate_password_hash, check_password_hash
+import platform
 
 # ic(type(session), type(request))
 
@@ -253,7 +254,9 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
-    # app.run() # For production
+    if platform.system() == "Windows":
+        app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
+    else:
+        app.run() # For production
     
     
