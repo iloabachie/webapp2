@@ -62,7 +62,7 @@ class Users(db.Model): # No need to define init class
 @app.context_processor
 def inject_defaults():
     default_year = date.today()
-    company_name = "Teddox"
+    company_name = "Webapp2"
     # glorem = get_paragraph(start_with_lorem=True)
     return dict(default_year=default_year, company_name=company_name) #, lorem=glorem)
 
