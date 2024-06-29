@@ -22,7 +22,7 @@
     {{ rec }}<br>
 {% endfor %}
 <br>
-<a href="{{ url_for('process') }}">New action</a>
-<a href="{{ url_for('send_to_email') }}">send to email</a>
+<a href="{{ url_for('send_to_email') }}" class="btn btn-primary">send to email</a>  
+<a href="{{ url_for('process') }}" class="btn btn-primary">New action</a>
 
 {% endblock inside_body %}
