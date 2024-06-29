@@ -16,15 +16,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # ic(type(session), type(request))
 
 app = Flask(__name__) 
-# app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLITE_DB")  # Add Database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/postgres_db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:3984@localhost:5432/users_pgdb'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # check on this
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///users_pg'
+app.config['SECRET_KEY'] = "mysecretkey"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Add Database
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 
-
-# print(app.config)
 
 # Initialize the database
 db = SQLAlchemy(app)
@@ -258,5 +253,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
-    # app.run(debug=False) # For production
+    # app.run(host='0.0.0.0', port=5000, debug=True) # for dev testing
+    app.run(host='0.0.0.0', port=5000, debug=False) # For production
